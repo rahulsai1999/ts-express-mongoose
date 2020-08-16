@@ -11,6 +11,7 @@
     "quotemark": [true, "double"],
     "variable-name": [true, "allow-leading-underscore"],
     "no-console": true,
-    "no-trailing-whitespace": false
+    "no-trailing-whitespace": false,
+    "only-arrow-functions": false
   }
 }
