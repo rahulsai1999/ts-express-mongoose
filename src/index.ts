@@ -1,16 +1,20 @@
 // dependencies
-import * as dotenv from "dotenv";
+import * as cors from "cors";
 import * as morgan from "morgan";
-import * as bodyParser from "body-parser";
-import { Request, Response } from "express";
+import * as dotenv from "dotenv";
+import * as passport from "passport";
 import { Server } from "@overnightjs/core";
 import { Logger } from "@overnightjs/logger";
+import { json, urlencoded } from "body-parser";
+import { Request, Response } from "express";
+
+// controllers
+import BlogController from "./controllers/blog.controller";
+import AuthController from "./controllers/user.controller";
 
 // utils
 import { dbConnect } from "./utils/db_conn";
-
-// controllers
-import { BlogController } from "./controllers/blogController";
+import { strategy } from "./utils/strategy";
 
 dotenv.config();
 
@@ -20,9 +24,12 @@ class ExpressServer extends Server {
     dbConnect();
 
     // utilities
-    this.app.use(bodyParser.json());
-    this.app.use(bodyParser.urlencoded({ extended: true }));
+    this.app.use(cors());
     this.app.use(morgan("dev"));
+    this.app.use(json());
+    this.app.use(urlencoded({ extended: true }));
+    this.app.use(passport.initialize());
+    passport.use(strategy);
 
     // Base Route
     this.app.get("/", (req: Request, res: Response) => {
@@ -30,8 +37,9 @@ class ExpressServer extends Server {
     });
 
     // Controllers
+    const auth = new AuthController();
     const blog = new BlogController();
-    super.addControllers([blog]);
+    super.addControllers([auth, blog]);
   }
 
   public start = (port: any) => {
