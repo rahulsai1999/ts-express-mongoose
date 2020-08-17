@@ -2,7 +2,9 @@ import { Controller, Get, Middleware, Post } from "@overnightjs/core";
 import { Request, Response } from "express";
 import { isEmpty } from "lodash";
 import Blog, { BlogType } from "../models/blog";
+import User from "../models/user";
 import isLoggedIn from "../utils/isLoggedIn";
+import extractID from "../utils/extract";
 
 @Controller("blogs")
 export default class BlogController {
@@ -10,12 +12,18 @@ export default class BlogController {
   @Middleware(isLoggedIn)
   createBlog = async (req: Request, res: Response) => {
     try {
+      const payload = extractID(req);
       const blog: BlogType = req.body;
       const { title, text } = blog;
+      const { id } = payload.body;
       if (isEmpty(title) || isEmpty(text)) {
         res.json({ error: true, message: "Either title or text is missing" });
       } else {
         const createdBlog = await Blog.create(blog);
+        await User.findOneAndUpdate(
+          { _id: id },
+          { $addToSet: { blogs: createdBlog._id } }
+        );
         res.json({ error: false, createdBlog });
       }
     } catch (e) {
