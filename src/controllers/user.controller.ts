@@ -1,4 +1,4 @@
-import { Controller, Post, Patch } from "@overnightjs/core";
+import { Controller, Post } from "@overnightjs/core";
 import { compareSync, genSaltSync, hashSync } from "bcrypt";
 import { Request, Response } from "express";
 import { sign } from "jsonwebtoken";
