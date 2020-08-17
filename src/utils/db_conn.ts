@@ -12,7 +12,7 @@ const dbConnect = (): void => {
     `mongodb://${DB_USER}:${DB_PASS}@${DB_HOST}`,
     {
       useNewUrlParser: true,
-      useFindAndModify: true,
+      useFindAndModify: false,
       useUnifiedTopology: true,
     },
     (err) => {
