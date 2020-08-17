@@ -27,16 +27,11 @@ export default class BlogController {
   @Middleware(isLoggedIn)
   getBlogs = async (req: Request, res: Response) => {
     try {
-      const { id } = req.params;
-      if (isEmpty(id)) {
-        res.json({ error: true, message: "No ID specified" });
+      const blogs = await Blog.find();
+      if (blogs.length > 0) {
+        res.json({ error: false, blogs });
       } else {
-        const blogs = await Blog.find();
-        if (blogs.length > 0) {
-          res.json({ error: false, blogs });
-        } else {
-          res.json({ error: false, message: "No Blogs found" });
-        }
+        res.json({ error: false, message: "No Blogs found" });
       }
     } catch (e) {
       res.json({ error: true, e });
